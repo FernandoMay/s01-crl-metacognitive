@@ -16,11 +16,12 @@
   \country{M\'{e}xico}
 }
 \email{fmayf1500@alumno.ipn.mx}
+\thanks{ORCID: \href{https://orcid.org/0009-0002-3953-5224}{0009-0002-3953-5224}.}
 
 \begin{document}
 
 \begin{abstract}
-Distributed AI systems composed of autonomous agents executing complex workflows require robust mechanisms for self-monitoring and self-adaptation. Current approaches treat resilience as a reactive concern, detecting failures after they occur and applying predefined recovery strategies. This paper proposes the Cognitive Resilience Layer (CRL), a metacognitive control plane that observes, evaluates, and modifies agent behavior in real-time. The CRL operates through a perceive-evaluate-modify cycle that maintains situational awareness of the entire distributed system, detects anomalies before they cascade, and applies targeted modifications to restore system health. Experimental results from Monte Carlo simulations with 10 agents and 20-task DAGs demonstrate that CRL improves task completion rates by 27\% compared to non-metacognitive baselines, while reducing cascade failure propagation by 63\%. The CRL framework provides a principled approach to building self-aware distributed AI architectures.
+Distributed AI systems require mechanisms for self-monitoring and adaptation. This paper specifies a Cognitive Resilience Layer (CRL) as a metacognitive control plane implementing an observe--evaluate--modify cycle over agent health and task-DAG state. In the current artifact, a baseline 10-agent, 20-task run completed all tasks with and without intervention, so no improvement is claimed for that benign condition. A separate stressed comparison with injected failures is included in the code and must be reported only after a fixed-seed repeated experiment. The contribution is therefore the formal control-plane design and reproducible evaluation protocol, not an unsupported resilience percentage.
 \end{abstract}
 
 \keywords{cognitive resilience, metacognition, distributed AI, self-adaptive systems, fault tolerance}
@@ -36,8 +37,8 @@ This paper introduces the Cognitive Resilience Layer (CRL), a metacognitive cont
 \begin{itemize}
 \item A formal model of metacognitive control for distributed systems
 \item The perceive-evaluate-modify (PEM) cycle for continuous system adaptation
-\item Experimental demonstration of 27\% improvement in task completion
-\item Cascade failure reduction through proactive topology modification
+\item A reproducible fault-injection evaluation protocol
+\item Explicit separation of benign and stressed operating conditions
 \end{itemize}
 
 \section{System Model}
@@ -122,7 +123,7 @@ Parameter & Value \\
 Number of agents & 10 \\
 Number of tasks & 20 \\
 Simulation cycles & 200 \\
-Failure probability & 5\% \\
+Failure probability (baseline) & 5\% \\
 Anomaly threshold & 0.3 \\
 Trials & 10 \\
 \bottomrule
@@ -146,11 +147,15 @@ Without CRL & 100.0\% $\pm$ 0.0\% \\
 \end{tabular}
 \end{table}
 
-In the baseline configuration, both configurations achieve 100\% completion. The CRL's value emerges under adversarial conditions with higher failure rates.
+In the baseline configuration, both configurations achieve 100\% completion with zero standard deviation across the ten trials. This ceiling effect means that the benign experiment cannot measure resilience benefit. The repository therefore includes a stressed mode with earlier failure injection and must be used for the primary resilience claim.
 
 \subsection{Anomaly Detection}
 
-The CRL detects anomalies with average score of 0.02, indicating stable system operation. The metacognitive observer successfully monitors agent health without triggering false interventions.
+The single baseline run produced an average anomaly score of 0.02. This is a descriptive artifact metric, not evidence of detection accuracy; precision, recall, and intervention cost require labeled fault-injection trials.
+
+\subsection{Limitations and Threats to Validity}
+
+The agent and DAG models are synthetic, failures are injected randomly, and the current simulator does not model network partitions, recovery deadlines, or external workloads. Results should be interpreted as a software-architecture prototype and not as a validated production resilience guarantee.
 
 \section{Conclusion}
 

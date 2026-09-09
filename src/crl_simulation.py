@@ -250,11 +250,17 @@ class CognitiveResilienceLayer:
 
     def run_simulation(self, agents: List[Agent],
                        dag: ExecutionDAG,
-                       num_cycles: int = 100) -> List[Dict]:
+                       num_cycles: int = 100,
+                       failure_probability: float = 0.05) -> List[Dict]:
         results = []
         for cycle in range(num_cycles):
             if dag.is_complete():
                 break
+
+            if random.random() < failure_probability:
+                active_agents = [a for a in agents if a.state != AgentState.FAILED]
+                if active_agents:
+                    random.choice(active_agents).state = AgentState.FAILED
 
             ready_nodes = dag.get_ready_nodes(
                 {n.node_id for n in dag.nodes if n.status == "completed"}
@@ -266,12 +272,6 @@ class CognitiveResilienceLayer:
                     node.status = "completed"
                     node.end_time = time.time()
                     agent.task_load = min(1.0, agent.task_load + 0.1)
-
-            if random.random() < 0.05:
-                active_agents = [a for a in agents if a.state != AgentState.FAILED]
-                if active_agents:
-                    victim = random.choice(active_agents)
-                    victim.state = AgentState.FAILED
 
             result = self.run_cycle(agents, dag)
             results.append(result)
@@ -356,7 +356,9 @@ class SimulationRunner:
             dag = self.create_dag(agents)
 
             crl = CognitiveResilienceLayer()
-            trial_results = crl.run_simulation(agents, dag, num_cycles=200)
+            trial_results = crl.run_simulation(
+                agents, dag, num_cycles=200, failure_probability=0.20
+            )
             completed = sum(1 for n in dag.nodes if n.status == "completed")
             results_with_crl.append(completed / max(len(dag.nodes), 1))
 
@@ -367,16 +369,15 @@ class SimulationRunner:
             for cycle in range(200):
                 if dag.is_complete():
                     break
+                if random.random() < 0.20:
+                    active = [a for a in agents if a.state != AgentState.FAILED]
+                    if active:
+                        random.choice(active).state = AgentState.FAILED
                 ready_nodes = dag.get_ready_nodes(
                     {n.node_id for n in dag.nodes if n.status == "completed"}
                 )
                 for node in ready_nodes:
                     node.status = "completed"
-
-                if random.random() < 0.05:
-                    active = [a for a in agents if a.state != AgentState.FAILED]
-                    if active:
-                        random.choice(active).state = AgentState.FAILED
 
             completed = sum(1 for n in dag.nodes if n.status == "completed")
             results_without_crl.append(completed / max(len(dag.nodes), 1))
@@ -396,6 +397,8 @@ class SimulationRunner:
 
 
 if __name__ == "__main__":
+    np.random.seed(20260909)
+    random.seed(20260909)
     print("=" * 60)
     print("Cognitive Resilience Layer as Metacognitive Control Plane")
     print("WSSE 2026 — Simulation Runner")

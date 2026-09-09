@@ -3,6 +3,9 @@
 **Paper:** Cognitive Resilience Layer as a Metacognitive Control Plane for Distributed AI Systems
 **Venue:** WSSE 2026 — World Symposium on Software Engineering
 **Authors:** Fernando May Fuentes et al.
+**ORCID:** https://orcid.org/0009-0002-3953-5224
+**Conference deadline:** September 5, 2026 (verify current CFP status)
+**Submission site:** www.wsse.org
 
 ## Overview
 
@@ -33,8 +36,8 @@ python src/crl_simulation.py
 
 | Configuration | Completion Rate |
 |---------------|-----------------|
-| With CRL | 87.3% ± 4.2% |
-| Without CRL | 68.7% ± 8.1% |
+| With CRL, benign baseline | 100.0% ± 0.0% |
+| Without CRL, benign baseline | 100.0% ± 0.0% |
 
 ## Citation
 
